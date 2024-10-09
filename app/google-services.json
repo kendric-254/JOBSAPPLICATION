@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "300444979242",
+    "project_id": "istapp-138b2",
+    "storage_bucket": "istapp-138b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:300444979242:android:ae21a50f34df071603f353",
+        "android_client_info": {
+          "package_name": "com.example.istjobsportal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAi44S-zRMbBWznSyOlIHK8sxR72Ivs5o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
