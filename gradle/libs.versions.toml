@@ -29,6 +29,7 @@ firebaseMessagingKtx = "24.0.1"
 runtimeLivedata = "1.7.2"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.0.0"
+firebaseStorage = "21.0.1"
 
 [libraries]
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
@@ -68,6 +69,7 @@ firebase-appcheck-debug = { group = "com.google.firebase", name = "firebase-appc
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

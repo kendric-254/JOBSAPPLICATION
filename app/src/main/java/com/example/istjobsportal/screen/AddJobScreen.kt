@@ -2,6 +2,7 @@ package com.example.istjobsportal.screen
 
 
 import android.app.DatePickerDialog
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -561,16 +562,21 @@ fun SkillSelection(
     onExpandedChange: (Boolean) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "Select Skills")
+        Text(text = "Select Skilz")
         Button(
-            onClick = { onExpandedChange(true) },
+            onClick = { onExpandedChange(true)
+                Log.d("SkillSelection", "Skill selection button clicked") // Log the click
+
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = if (selectedSkills.isEmpty()) "Select Skills" else selectedSkills.joinToString(", "))
+            Text(text = if (selectedSkills.isEmpty()) "Select Skilz" else selectedSkills.joinToString(", "))
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { onExpandedChange(false) }
+            onDismissRequest = { onExpandedChange(false)
+                Log.d("SkillSelection", "Dropdown menu dismissed") // Log menu dismissal
+            }
         ) {
             skills.forEach { skill ->
                 val isSelected = selectedSkills.contains(skill.skillName)

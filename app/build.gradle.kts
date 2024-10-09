@@ -87,6 +87,7 @@ dependencies {
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)

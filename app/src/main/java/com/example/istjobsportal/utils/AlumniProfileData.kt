@@ -4,10 +4,6 @@ enum class DegreeChoice {
     Degree_In_Software_Engineering,
     Degree_In_Computer_Science,
     Degree_In_Information_Technology,
-    Degree_In_Data_Science,
-    Degree_In_Cyber_Security,
-    Degree_In_Artificial_Intelligence,
-    Other // Add an option for alumni who have a different degree
 }
 
 //@Entity(tableName = "alumniProfiles")

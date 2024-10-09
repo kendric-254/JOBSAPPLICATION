@@ -1,11 +1,11 @@
 package com.example.istjobsportal.screen
 
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,25 +16,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import coil.compose.rememberAsyncImagePainter
 import com.example.istjobsportal.R
 
@@ -48,20 +49,13 @@ fun CompleteProfileForm(
     onPhoneChange: (String) -> Unit,
     linkedIn: String,
     onLinkedInChange: (String) -> Unit,
-//    showLogo: Boolean,
     profilePhoto: Uri?,
     onSelectPhotoClick: () -> Unit,
-    onSubmit: () -> Unit
+    onSubmit: () -> Unit,
+    currentStep: Int,
+    isLoading: Boolean,
+    onBackClick: () -> Unit
 ) {
-    // Get context from LocalContext within the composable
-    val context = LocalContext.current
-//before validation check the values to ensure they are as expected
-    Log.d("CompleteProfileForm", "Full Name: $fullName, Email: $email, Phone: $phone, LinkedIn: $linkedIn")
-
-
-    // Define the form validity check
-    val isFormValid = fullName.isNotBlank() && email.isNotBlank() && phone.isNotBlank() && linkedIn.isNotBlank()
-
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -69,6 +63,7 @@ fun CompleteProfileForm(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
+        // School logo
         val schoolLogo = R.drawable.project_logo
         Image(
             painter = painterResource(id = schoolLogo),
@@ -80,17 +75,6 @@ fun CompleteProfileForm(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-////to display logo conditionally based on the showLogo parameter
-//        if (showLogo) {
-//            Image(
-//                painter = painterResource(id = schoolLogo),
-//                contentDescription = "School Logo",
-//                modifier = Modifier
-//                    .size(200.dp)
-//                    .shadow(4.dp),
-//                contentScale = ContentScale.Crop
-//            )
-//        }
 
         // Profile Photo
         if (profilePhoto != null) {
@@ -113,87 +97,114 @@ fun CompleteProfileForm(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Full Name
+        // Full Name Field
         OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             value = fullName,
             onValueChange = onFullNameChange,
-            label = { Text(text = "Full Name") },
+            label = { Text("Full Name") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
-            ),
-            isError = fullName.isBlank()
+            )
         )
 
-        // Email
+        // Email Field (removed read-only)
         OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             value = email,
             onValueChange = onEmailChange,
-            label = { Text(text = "Email") },
+            label = { Text("Email") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
-            ),
-            readOnly = true,
-            isError = email.isBlank()
+            )
         )
 
-        // Phone
+        // Phone Field
         OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             value = phone,
             onValueChange = onPhoneChange,
-            label = { Text(text = "Phone") },
+            label = { Text("Phone") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Phone,
                 imeAction = ImeAction.Next
-            ),
-            isError = phone.isBlank()
+            )
         )
 
-        // LinkedIn URL
+        // LinkedIn URL Field
         OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             value = linkedIn,
             onValueChange = onLinkedInChange,
-            label = { Text(text = "LinkedIn Profile URL") },
+            label = { Text("LinkedIn Profile URL") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Uri,
                 imeAction = ImeAction.Done
-            ),
-            isError = linkedIn.isBlank()
+            )
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        var errorMessage by remember { mutableStateOf("") }
+        // Progress Bar
+        StepProgressBar(currentStep)
 
-        Button(
-            onClick = {
-                if (isFormValid) {
-                    onSubmit()  // Submit the form data
-                } else {
-                    errorMessage = "Please fill in all the fields"
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Loader and Buttons (Submit, Back)
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            if (isLoading) {
+                CircularProgressIndicator()  // Loader
+            } else {
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        OutlinedButton(onClick = onBackClick, modifier = Modifier.weight(1f)) {
+                            Text("Back")
+                        }
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        Button(
+                            onClick = {
+                                onSubmit() // Directly call submit without validation
+                            },
+                            modifier = Modifier.weight(1f),
+                            enabled = !isLoading
+                        ) {
+                            Text("Submit")
+                        }
+                    }
                 }
-            },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-        ) {
-            Text(text = "Submit", style = MaterialTheme.typography.labelLarge)
+            }
         }
+    }
+}
 
-        if (errorMessage.isNotBlank()) {
-            Text(text = errorMessage, color = Color.Red)
-        }
+@Composable
+fun StepProgressBar(currentStep: Int) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = "Step $currentStep of 4",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
+        )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LinearProgressIndicator(
+            progress = currentStep / 4f,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .height(8.dp),
+            color = MaterialTheme.colorScheme.primary,
+        )
     }
 }
